@@ -1,0 +1,80 @@
+---
+title: "Assignment_7"
+author: "Weronika Lepiarz"
+format: html
+editor: visual
+---
+
+**Task 1:** Load the “iris” dataset and transform it to longer.
+
+Uploading needed libraries.
+
+```{r}
+library(tidyr)
+library(dplyr)
+```
+
+Loading "iris" dataset.
+
+```{r}
+data(iris)
+head(iris)
+```
+
+Transforming data to longer.
+
+```{r}
+iris_long <- iris %>%
+  pivot_longer(cols = -"Species", names_to = "Trait", values_to = "Size")
+head(iris_long)
+```
+
+cols = - "Species" means EVERY column beside Species
+
+**Task 2.1:** What is the **mean** **length** and **width** of the **sepal** and **petal** of each species?
+
+```{r}
+iris_mean <- iris_long %>%
+  group_by(Species, Trait) %>%
+  summarise(Mean_Size = mean(Size))
+iris_mean
+```
+
+-   group_by(Species, Trait) - groups data by species and trait
+
+-   summarise(Mean_Size = mean(Size)) - calculate mean value (from Size column) for each group
+
+**Task 2.2:** What is the **largest** and **widest**,  **petal** and **sepal,**  of **virginica** and **versicolor** species?
+
+```{r}
+iris_max <- iris_long %>%
+  filter(Species %in% c("virginica", "versicolor")) %>%
+  group_by(Species, Trait) %>%
+  summarise(Max_Size = max(Size))
+iris_max
+```
+
+-   filter(Species %in% c("virginica", "versicolor")) - filters and keeps only Species as virginica and versicolor
+
+-   group_by(Species, Trait) - groups data by species and trait
+
+-   summarise(Max_Size = max(Size)) - gets maximum value (from Size column) for each group
+
+**Task 2.3:** For each species, for sepal and petal width and length, how many observations are above the mean?
+
+```{r}
+iris_above_mean <- iris_long %>%
+  left_join(iris_mean, by = c("Species", "Trait")) %>%
+  filter(Size > Mean_Size) %>%
+  group_by(Species, Trait) %>%
+  summarise(Count_Above_Mean = n())
+iris_above_mean
+```
+
+-   left_join(iris_mean, by = c("Species", "Trait")) - adds mean row to every row
+
+-   filter(Size \> Mean_Size) - filters and keeps rows where Size is greater than Mean_Size
+
+-   group_by(Species, Trait) - groups data by species and trait
+
+-   summarise(Count_Above_Mean = n()) - counts how many rows passed the filter
