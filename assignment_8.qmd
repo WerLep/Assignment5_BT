@@ -1,0 +1,71 @@
+---
+title: "Assignment8"
+author: "Weronika Lepiarz"
+format:
+  html:
+    embed-resources: true    
+    self-contained-math: true  
+editor: visual
+---
+
+**"Bad" graph that we are going to fix**
+
+![](images/clipboard-3523476922.png)
+
+**Uploading needed libraries**
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggthemes)
+```
+
+**Generating data using rnorm() function**
+
+```{r}
+data <- data.frame(
+  Candidate = rep(c("Marcelo Rebelo", "André Ventura", "Ana Gomes", "Marisa Matias", "João Ferreira", "Other Candidates"), each = 1000),
+  Votes = c(
+    rnorm(1000, mean = 60.3, sd = 1),
+    rnorm(1000, mean = 9.4, sd = 1),
+    rnorm(1000, mean = 14.0, sd = 1),
+    rnorm(1000, mean = 6.2, sd = 1),
+    rnorm(1000, mean = 2.9, sd = 1),
+    rnorm(1000, mean = 7.2, sd = 1)
+  )
+)
+```
+
+**rnorm()** - function used for generating a vector of random numbers with a normal distribution
+
+**Syntax:** rnorm(n, mean = 0, sd = 1)
+
+**n** - number of random values to generate
+
+**mean** - the average (center) of the distribution
+
+**sd** - how spread out the values are around the mean
+
+I used suggestion from assignment and used rnorm() function. Let's say that we took election results from 1000 cities and made averages from it.I chose 1000 (instead of 100, for example) because with more data, the averages are closer to their expected values. When I used 100, the average percentages sometimes differed by 0.1, which was unacceptable in this case because the results should always sum to 100%.
+
+**Summarizing data and calculating averages**
+
+```{r}
+summary_data <- data %>%
+  group_by(Candidate) %>%
+  summarise(Average_percentage = round(mean(Votes), 1))
+```
+
+**Creating plot**
+
+```{r}
+ggplot(summary_data, aes(x = Candidate, y = Average_percentage)) +
+  geom_col(aes(fill=Candidate))+
+  theme_igray()+
+  theme(legend.position = "none")+
+  labs(title="Election results", 
+       x="Candidate", 
+       y="Percentage of votes")
+```
+
+I removed the legend using theme(legend.position = "none") because the plot is clearer this way. Each bar is already labeled so legend was unnecessary.
